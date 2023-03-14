@@ -1,21 +1,21 @@
 import {
   AppShell,
   Burger,
+  Button,
   Footer,
   Header,
   MediaQuery,
-  Navbar,
   Text,
   useMantineTheme,
 } from "@mantine/core";
 import { useState } from "react";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 
-export interface IUserLayout {
+export interface IPublicLayout {
   children: React.ReactNode;
 }
 
-const UserLayout: React.FC<IUserLayout> = ({ children }) => {
+const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   return (
@@ -30,23 +30,17 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
       }}
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
-      navbar={
-        <Navbar
-          p="md"
-          hiddenBreakpoint="sm"
-          hidden={!opened}
-          width={{ sm: 200, lg: 300 }}
-        >
-          <Text>Application navbar</Text>
-        </Navbar>
-      }
       footer={
         <Footer height={60} p="md">
           Application footer
         </Footer>
       }
       header={
-        <Header height={{ base: 50, md: 70 }} p="md">
+        <Header
+          height={{ base: 50, md: 70 }}
+          p="md"
+          className="items-between flex items-center justify-between"
+        >
           <div
             style={{ display: "flex", alignItems: "center", height: "100%" }}
           >
@@ -61,7 +55,9 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
             </MediaQuery>
 
             <Text>Application header</Text>
-
+          </div>
+          <div>
+            <Button>Log in</Button>
             <ColorSchemeToggler />
           </div>
         </Header>
@@ -72,4 +68,4 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
   );
 };
 
-export default UserLayout;
+export default PublicLayout;
