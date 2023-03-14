@@ -29,6 +29,7 @@ const MyApp: AppType<{
           <MantineProvider
             withGlobalStyles
             withNormalizeCSS
+            withCSSVariables
             theme={{
               colorScheme: colorScheme,
             }}
