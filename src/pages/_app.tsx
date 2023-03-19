@@ -7,6 +7,7 @@ import { useState } from "react";
 import "~/styles/globals.css";
 import type { ColorScheme } from "@mantine/core";
 import type { NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
+import { Notifications } from "@mantine/notifications";
 
 const MyApp: AppType<{
   session: Session | null;
@@ -17,7 +18,8 @@ const MyApp: AppType<{
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
-  const getLayout = Component.getLayout ?? ((page) => page);
+  const getLayout =
+    (Component as NextPageWithLayout).getLayout ?? ((page) => page);
 
   return (
     <>
@@ -34,6 +36,7 @@ const MyApp: AppType<{
               colorScheme: colorScheme,
             }}
           >
+            <Notifications />
             {getLayout(<Component {...pageProps} />)}
           </MantineProvider>
         </ColorSchemeProvider>
