@@ -56,9 +56,9 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
 
             <Text>Application header</Text>
           </div>
-          <div>
-            <Button>Log in</Button>
+          <div className="gap- 5 flex items-center gap-5">
             <ColorSchemeToggler />
+            <Button>Log in</Button>
           </div>
         </Header>
       }

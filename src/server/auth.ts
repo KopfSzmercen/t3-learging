@@ -1,11 +1,14 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { USER_ROLE } from "@prisma/client";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type NextAuthOptions,
   type DefaultSession,
+  type NextAuthOptions,
 } from "next-auth";
+import { type DefaultJWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GITHUBProvider from "next-auth/providers/GITHUB";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -20,14 +23,21 @@ declare module "next-auth" {
     user: {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: USER_ROLE;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface JWT extends DefaultJWT {
+    user: {
+      id: string;
+      role: USER_ROLE;
+    };
+  }
+
+  interface User {
+    id: string;
+    role: USER_ROLE;
+  }
 }
 
 /**
@@ -36,12 +46,21 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user?.id;
+        token.user = user;
+        token.role = user.role;
       }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.role = token.role as USER_ROLE;
+      session.user.id = token.id as string;
       return session;
     },
   },
@@ -60,6 +79,39 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
+    CredentialsProvider({
+      name: "Credentials",
+
+      credentials: {
+        email: { label: "Email", type: "string", placeholder: "email@e.pl" },
+        password: {
+          label: "Password",
+          type: "string",
+          placeholder: "password",
+        },
+      },
+
+      async authorize(credentials) {
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        });
+
+        if (!user) throw new Error("User not found.");
+        const isSamePass = user?.password === password;
+        if (!isSamePass) {
+          throw new Error("invalid credentials");
+        }
+
+        return user;
+      },
+    }),
   ],
 };
 
