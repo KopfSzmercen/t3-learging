@@ -1,28 +1,42 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, Center, Stack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/router";
 import { FormProvider, useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import InputTextForm from "~/components/common/form/InputTextForm";
 import { type NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
 import PublicLayout from "~/components/common/layouts/PublicLayout";
 import { api } from "~/utils/api";
-import { notifications } from "@mantine/notifications";
 
-const SignUpFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().nonempty(),
-  confirmPassword: z.string().nonempty(),
-});
-
+const SignUpFormSchema = z
+  .object({
+    email: z.string().email().nonempty(),
+    password: z.string().nonempty(),
+    confirmPassword: z.string().nonempty(),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "The passwords did not match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 type TSignUpFormSchema = z.infer<typeof SignUpFormSchema>;
 
 const SignUpPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
   const signUpMutation = api.auth.signUp.signUp.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       notifications.show({
         title: "Success!",
         message: "Registered successfully!",
       });
+
+      await router.push("/auth/sign-in");
     },
     onError: (error) => {
       console.log(error);
@@ -76,7 +90,9 @@ const SignUpPage: NextPageWithLayout = () => {
             </Stack>
 
             <Center className="mt-10">
-              <Button type="submit">Register</Button>
+              <Button type="submit" loading={signUpMutation.isLoading}>
+                Register
+              </Button>
             </Center>
           </form>
         </Card>
@@ -90,3 +106,9 @@ export default SignUpPage;
 SignUpPage.getLayout = (page) => {
   return <PublicLayout>{page}</PublicLayout>;
 };
+
+export async function getServerSideProps() {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
