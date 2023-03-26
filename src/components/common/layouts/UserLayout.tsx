@@ -1,13 +1,17 @@
 import {
   AppShell,
   Burger,
+  Button,
   Footer,
   Header,
   MediaQuery,
   Navbar,
+  Skeleton,
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 
@@ -18,6 +22,19 @@ export interface IUserLayout {
 const UserLayout: React.FC<IUserLayout> = ({ children }) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
+  const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  console.log(status);
+
+  if (status === "unauthenticated") void router.push("/");
+
+  const handleLogout = async () => {
+    const response = await signOut({ redirect: false });
+    void router.push("/");
+  };
+
   return (
     <AppShell
       styles={{
@@ -37,7 +54,9 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
           hidden={!opened}
           width={{ sm: 200, lg: 300 }}
         >
-          <Text>Application navbar</Text>
+          <Text className="font-bold" size="lg">
+            Hello {session?.user.email}
+          </Text>
         </Navbar>
       }
       footer={
@@ -60,16 +79,39 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
               />
             </MediaQuery>
 
-            <Text>Application header</Text>
+            <div className=" hidden items-center gap-3 md:flex">
+              <Text>Application header</Text>
+            </div>
 
-            <ColorSchemeToggler />
+            <div className="ml-auto flex items-center gap-5">
+              <ColorSchemeToggler />
+              <Button onClick={handleLogout}>Sign out</Button>
+            </div>
           </div>
         </Header>
       }
     >
-      <main>{children}</main>
+      {status === "loading" ? (
+        <main>
+          {
+            <Skeleton visible className="h-[90vw]">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed
+              voluptatibus quisquam mollitia dolor fugit in odit repudiandae
+              saepe maxime fuga.
+            </Skeleton>
+          }
+        </main>
+      ) : (
+        <main>{children}</main>
+      )}
     </AppShell>
   );
+};
+
+export const getServerSideProps = () => {
+  return {
+    props: {},
+  };
 };
 
 export default UserLayout;

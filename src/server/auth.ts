@@ -11,6 +11,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GITHUBProvider from "next-auth/providers/GITHUB";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
+import * as bcrypt from "bcrypt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -97,6 +98,10 @@ export const authOptions: NextAuthOptions = {
           password: string;
         };
 
+        await new Promise((r) => {
+          return setTimeout(r, 5000);
+        });
+
         const user = await prisma.user.findUnique({
           where: {
             email,
@@ -104,7 +109,9 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) throw new Error("User not found.");
-        const isSamePass = user?.password === password;
+
+        const isSamePass = await bcrypt.compare(password, user.password);
+
         if (!isSamePass) {
           throw new Error("invalid credentials");
         }

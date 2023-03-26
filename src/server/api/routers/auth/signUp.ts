@@ -5,8 +5,10 @@ import {
   TRPC_ERROR_CODES_BY_NUMBER,
 } from "@trpc/server/rpc";
 import { z } from "zod";
-
+import * as bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+
+const HASH_ROUNDS = 10;
 
 export const signUp = createTRPCRouter({
   signUp: publicProcedure
@@ -24,10 +26,12 @@ export const signUp = createTRPCRouter({
           message: "User already exists",
         });
 
+      const hashedPassword = await bcrypt.hash(password, HASH_ROUNDS);
+
       const result = await ctx.prisma.user.create({
         data: {
           email,
-          password,
+          password: hashedPassword,
           role: USER_ROLE.TEACHER,
           accounts: {
             create: {
