@@ -39,6 +39,9 @@ export const signUp = createTRPCRouter({
               type: "credentials",
             },
           },
+          teacherProfile: {
+            create: {},
+          },
         },
         select: {
           id: true,

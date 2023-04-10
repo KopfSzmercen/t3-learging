@@ -1,5 +1,6 @@
 import { authRouter } from "~/server/api/routers/auth/authRouter";
 import { exampleRouter } from "~/server/api/routers/example";
+import { teacherRouter } from "~/server/api/routers/teacher/teacher.router";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -10,6 +11,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   auth: authRouter,
+  teacher: teacherRouter,
 });
 
 // export type definition of API

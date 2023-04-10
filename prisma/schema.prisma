@@ -42,16 +42,17 @@ model Session {
 }
 
 model User {
-    id            String      @id @default(cuid())
-    name          String?
-    email         String      @unique
-    password      String
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    role          USER_ROLE
-    classroomms   Classroom[]
+    id             String          @id @default(cuid())
+    name           String?
+    email          String          @unique
+    password       String
+    emailVerified  DateTime?
+    image          String?
+    accounts       Account[]
+    sessions       Session[]
+    role           USER_ROLE
+    classroomms    Classroom[]
+    teacherProfile TeacherProfile?
 }
 
 enum USER_ROLE {
@@ -66,6 +67,25 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model TeacherProfile {
+    id      String @id @default(cuid())
+    userId  String @unique
+    account User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    firstName   String?
+    lastName    String?
+    dateOfBirth DateTime?
+
+    teachingSubjects TeachingSubject[]
+}
+
+model TeachingSubject {
+    id               String          @id @default(cuid())
+    name             String
+    teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
+    teacherProfileId String?
 }
 
 model Classroom {

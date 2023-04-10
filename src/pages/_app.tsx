@@ -1,23 +1,25 @@
-import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
-import type { AppContext, AppType } from "next/app";
-import { api } from "~/utils/api";
-import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
-import { useState } from "react";
-import "~/styles/globals.css";
 import type { ColorScheme } from "@mantine/core";
-import type { NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
+import { ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { getCookie, setCookie } from "cookies-next";
+import { type Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
+import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
+import { useState } from "react";
+import type { NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
+import { RouterTransition } from "~/components/common/ui/RouterTransition";
+import "~/styles/globals.css";
+import { api } from "~/utils/api";
 
-const MyApp: AppType<{
-  session: Session | null;
-  Component: NextPageWithLayout;
-  colorScheme: ColorScheme;
-}> = ({ Component, pageProps: { session, ...pageProps } }) => {
+const MyApp = (
+  props: AppProps & { colorScheme: ColorScheme } & {
+    session: Session;
+  }
+) => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    pageProps.colorScheme
+    //eslint-disable-next-line
+    props.pageProps.colorScheme
   );
 
   const toggleColorScheme = (value?: ColorScheme) => {
@@ -30,11 +32,11 @@ const MyApp: AppType<{
   };
 
   const getLayout =
-    (Component as NextPageWithLayout).getLayout ?? ((page) => page);
+    (props.Component as NextPageWithLayout).getLayout ?? ((page) => page);
 
   return (
     <>
-      <SessionProvider session={session}>
+      <SessionProvider session={props.session}>
         <ColorSchemeProvider
           colorScheme={colorScheme}
           toggleColorScheme={toggleColorScheme}
@@ -49,8 +51,9 @@ const MyApp: AppType<{
               primaryColor: "violet",
             }}
           >
+            <RouterTransition />
             <Notifications />
-            {getLayout(<Component {...pageProps} />)}
+            {getLayout(<props.Component {...props.pageProps} />)}
           </MantineProvider>
         </ColorSchemeProvider>
       </SessionProvider>
@@ -63,6 +66,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   return {
     ...appProps,
+    session: null,
+    Component: appContext.Component,
     pageProps: {
       colorScheme: getCookie("mantine-color-scheme", appContext.ctx) || "light",
     },
