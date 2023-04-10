@@ -11,7 +11,9 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 
@@ -20,12 +22,18 @@ export interface IPublicLayout {
 }
 
 const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
+  const session = useSession();
+  const isLoggedIn = session.status === "authenticated";
+  const router = useRouter();
+
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
 
-  const matches = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, true, {
+  const matches = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, false, {
     getInitialValueInEffect: false,
   });
+
+  if (isLoggedIn) void router.push("/teacher/dashboard");
 
   return (
     <AppShell
@@ -37,7 +45,7 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
               : theme.colors.gray[0],
         },
       }}
-      navbarOffsetBreakpoint="sm"
+      navbarOffsetBreakpoint="xl"
       asideOffsetBreakpoint="sm"
       footer={
         <Footer height={60} p="md">
@@ -45,30 +53,29 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
         </Footer>
       }
       navbar={
-        matches ? (
-          <Navbar
-            p="md"
-            hiddenBreakpoint="sm"
-            hidden={!opened}
-            width={{ sm: 200, lg: 300 }}
-          >
-            <Stack className="text-center">
-              <Text className="text-2xl font-bold">Use our app right now!</Text>
+        <Navbar
+          p="md"
+          hiddenBreakpoint="md"
+          hidden={!opened}
+          width={{ sm: 200, md: 0 }}
+          display={{ md: "none" }}
+        >
+          <Stack className="text-center">
+            <Text className="text-2xl font-bold">Use our app right now!</Text>
 
-              <Stack className="mt-5 w-full" spacing={30}>
-                <Link href="/auth/sign-in">
-                  <Button className="w-[80%]">Log in</Button>
-                </Link>
+            <Stack className="mt-5 w-full" spacing={30}>
+              <Link href="/auth/sign-in">
+                <Button className="w-[80%]">Log in</Button>
+              </Link>
 
-                <Link href="/auth/sign-up">
-                  <Button variant="outline" className="w-[80%]">
-                    Sign up
-                  </Button>
-                </Link>
-              </Stack>
+              <Link href="/auth/sign-up">
+                <Button variant="outline" className="w-[80%]">
+                  Sign up
+                </Button>
+              </Link>
             </Stack>
-          </Navbar>
-        ) : undefined
+          </Stack>
+        </Navbar>
       }
       header={
         <Header

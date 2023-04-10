@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, Center, Stack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import { FormProvider, useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import InputTextForm from "~/components/common/form/InputTextForm";
 import { type NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
 import PublicLayout from "~/components/common/layouts/PublicLayout";
+import errorNotification from "~/components/common/ui/ErrorNotification";
+import successNotification from "~/components/common/ui/SuccessNotification";
 import { api } from "~/utils/api";
 
 const SignUpFormSchema = z
@@ -30,20 +31,12 @@ const SignUpPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const signUpMutation = api.auth.signUp.signUp.useMutation({
-    onSuccess: async () => {
-      notifications.show({
-        title: "Success!",
-        message: "Registered successfully!",
-      });
-
-      await router.push("/auth/sign-in");
+    onSuccess: () => {
+      successNotification("Registered successfully!");
+      void router.push("/auth/sign-in");
     },
     onError: (error) => {
-      console.log(error);
-      notifications.show({
-        title: "Error!",
-        message: error.message ?? "Sorry, there was an error.",
-      });
+      errorNotification(error.message ?? "Sorry, there was an error.");
     },
   });
 
@@ -107,6 +100,7 @@ SignUpPage.getLayout = (page) => {
   return <PublicLayout>{page}</PublicLayout>;
 };
 
+//eslint-disable-next-line
 export async function getServerSideProps() {
   return {
     props: {}, // will be passed to the page component as props

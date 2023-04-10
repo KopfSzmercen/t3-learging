@@ -10,10 +10,13 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
+import MainLink from "~/components/common/ui/MainLink";
+import { RiDashboardLine } from "react-icons/ri";
 
 export interface IUserLayout {
   children: React.ReactNode;
@@ -26,13 +29,18 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
 
   const { data: session, status } = useSession();
 
-  console.log(status);
-
   if (status === "unauthenticated") void router.push("/");
 
   const handleLogout = async () => {
-    const response = await signOut({ redirect: false });
-    void router.push("/");
+    try {
+      await signOut({ redirect: false });
+      void router.push("/");
+    } catch (error) {
+      notifications.show({
+        message: "An error has occured.",
+        title: "Error",
+      });
+    }
   };
 
   return (
@@ -54,9 +62,15 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
           hidden={!opened}
           width={{ sm: 200, lg: 300 }}
         >
-          <Text className="font-bold" size="lg">
-            Hello {session?.user.email}
-          </Text>
+          <Navbar.Section>
+            <Text className="font-bold" size="lg">
+              Hello {session?.user.email}
+            </Text>
+          </Navbar.Section>
+          <Navbar.Section grow mt="md">
+            <MainLink label="Dashboard" icon={<RiDashboardLine />} />
+          </Navbar.Section>
+          <Navbar.Section>{/* Footer with user */}</Navbar.Section>
         </Navbar>
       }
       footer={

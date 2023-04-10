@@ -2,13 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, Center, Stack, Text } from "@mantine/core";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import InputTextForm from "~/components/common/form/InputTextForm";
 import { type NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
 import PublicLayout from "~/components/common/layouts/PublicLayout";
-import { notifications } from "@mantine/notifications";
-import { useState } from "react";
+import errorNotification from "~/components/common/ui/ErrorNotification";
+import successNotification from "~/components/common/ui/SuccessNotification";
 
 const SignInFormSchema = z.object({
   email: z.string().email().nonempty(),
@@ -32,13 +33,13 @@ const Index: NextPageWithLayout = () => {
     setIsLoading(false);
 
     if (response?.error) {
-      notifications.show({
-        title: "Error!",
-        message: response.error ?? "Sorry, there was an error.",
-      });
+      errorNotification(response?.error);
     }
 
-    if (response?.ok) void router.push("/teacher/dashboard");
+    if (response?.ok) {
+      successNotification("Sign in successfull!");
+      void router.push("/teacher/dashboard");
+    }
   };
 
   return (
@@ -85,5 +86,12 @@ const Index: NextPageWithLayout = () => {
 Index.getLayout = (page) => {
   return <PublicLayout>{page}</PublicLayout>;
 };
+
+//eslint-disable-next-line
+export async function getServerSideProps() {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
 
 export default Index;
