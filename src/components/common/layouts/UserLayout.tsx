@@ -17,6 +17,8 @@ import { useState } from "react";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 import MainLink from "~/components/common/ui/MainLink";
 import { RiDashboardLine } from "react-icons/ri";
+import { MdRoomPreferences } from "react-icons/md";
+import Link from "next/link";
 
 export interface IUserLayout {
   children: React.ReactNode;
@@ -68,7 +70,13 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
             </Text>
           </Navbar.Section>
           <Navbar.Section grow mt="md">
-            <MainLink label="Dashboard" icon={<RiDashboardLine />} />
+            <Link href="/teacher/dashboard" className="no-underline">
+              <MainLink label="Dashboard" icon={<RiDashboardLine />} />
+            </Link>
+
+            <Link href="/teacher/classrooms" className="no-underline">
+              <MainLink label="Classrooms" icon={<MdRoomPreferences />} />
+            </Link>
           </Navbar.Section>
           <Navbar.Section>{/* Footer with user */}</Navbar.Section>
         </Navbar>

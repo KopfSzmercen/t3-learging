@@ -51,7 +51,6 @@ model User {
     accounts       Account[]
     sessions       Session[]
     role           USER_ROLE
-    classroomms    Classroom[]
     teacherProfile TeacherProfile?
 }
 
@@ -79,19 +78,30 @@ model TeacherProfile {
     dateOfBirth DateTime?
 
     teachingSubjects TeachingSubject[]
+    ownedClassrooms  Classroom[]
 }
 
 model TeachingSubject {
     id               String          @id @default(cuid())
     name             String
+    degree           DEGREE
+    almaMater        String
     teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
     teacherProfileId String?
 }
 
 model Classroom {
-    id               String @id @default(cuid())
-    userId           String
-    account          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id String @id @default(cuid())
+
     name             String
     numberOfStudents Int
+    teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
+    teacherProfileId String?
+}
+
+enum DEGREE {
+    BACHELOR
+    ENGINEER
+    DOCTOR
+    PROFESSOR
 }
