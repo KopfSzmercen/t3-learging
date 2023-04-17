@@ -1,20 +1,19 @@
 import {
   ActionIcon,
   Button,
-  Card,
   Center,
+  Paper,
   Skeleton,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
-import { useSession } from "next-auth/react";
-import React from "react";
-import { api } from "~/utils/api";
-import { format } from "date-fns";
 import { useDisclosure } from "@mantine/hooks";
-import { ProfileInfoFormModal } from "~/modules/teacher/dashboard/ProfileInfoFormModal";
+import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 import { AiFillEdit } from "react-icons/ai";
+import { ProfileInfoFormModal } from "~/modules/teacher/dashboard/ProfileInfoFormModal";
+import { api } from "~/utils/api";
 
 const isTeacherProfileSetUp = (data: { [key: string]: unknown }) => {
   for (const prop in data) {
@@ -36,11 +35,9 @@ const TeacherProfileInfo = () => {
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
 
-  if (isLoading) return <Skeleton radius="xl" width="70%" height="50%" />;
+  if (isLoading) return <Skeleton>lorem</Skeleton>;
 
-  if (!data) return <></>;
-
-  const isProfileSetUp = isTeacherProfileSetUp(data);
+  const isProfileSetUp = data && isTeacherProfileSetUp(data);
 
   return (
     <Center>
@@ -51,8 +48,8 @@ const TeacherProfileInfo = () => {
         </Stack>
       )}
 
-      {isProfileSetUp && (
-        <Card className="text-md w-[70vw] max-w-[1000px]">
+      {isProfileSetUp && data && (
+        <Paper className="md:text-md w-[90vw] max-w-[1000px] p-5 text-sm md:w-[70vw]">
           <ActionIcon
             className="ml-auto"
             color="violet"
@@ -86,14 +83,17 @@ const TeacherProfileInfo = () => {
               {format(data.dateOfBirth as Date, "dd-MM-yyyy")}
             </Title>
           </Stack>
-        </Card>
+        </Paper>
       )}
-      <ProfileInfoFormModal
-        closeModal={closeFormModal}
-        isOpen={isFormModalOpen}
-        {...data}
-        refetch={refetch}
-      />
+
+      {data && (
+        <ProfileInfoFormModal
+          closeModal={closeFormModal}
+          isOpen={isFormModalOpen}
+          {...data}
+          refetch={refetch}
+        />
+      )}
     </Center>
   );
 };
