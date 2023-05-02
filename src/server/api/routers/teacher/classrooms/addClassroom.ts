@@ -13,7 +13,7 @@ export const addClassroom = createTRPCRouter({
       const newClassroom = await ctx.prisma.classroom.create({
         data: {
           name: input.name,
-          numberOfStudents: input.numberOfStudents,
+          maxNumberOfStudents: input.numberOfStudents,
           teacherProfile: {
             connect: {
               userId: ctx.session?.user.id,
