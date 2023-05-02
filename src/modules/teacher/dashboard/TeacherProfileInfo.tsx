@@ -42,10 +42,14 @@ const TeacherProfileInfo = () => {
   return (
     <Center>
       {!isProfileSetUp && (
-        <Stack>
-          <Text size="xl">Your profile has not been set up yet.</Text>
-          <Button onClick={() => openFormModal()}>Do it now!</Button>
-        </Stack>
+        <Paper className=" w-[90vw] max-w-[1000px] p-5 md:w-[70vw]">
+          <Center className="flex flex-col gap-5">
+            <Text size="xl">Your profile has not been set up yet.</Text>
+            <Button onClick={() => openFormModal()} className="w-[300px]">
+              Do it now!
+            </Button>
+          </Center>
+        </Paper>
       )}
 
       {isProfileSetUp && data && (

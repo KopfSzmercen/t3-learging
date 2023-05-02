@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["extendedWhereUnique"]
 }
 
 datasource db {
@@ -52,6 +53,7 @@ model User {
     sessions       Session[]
     role           USER_ROLE
     teacherProfile TeacherProfile?
+    studentProfule StudentProfile?
 }
 
 enum USER_ROLE {
@@ -93,10 +95,22 @@ model TeachingSubject {
 model Classroom {
     id String @id @default(cuid())
 
-    name             String
-    numberOfStudents Int
-    teacherProfile   TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
-    teacherProfileId String?
+    name                String
+    maxNumberOfStudents Int
+    teacherProfile      TeacherProfile? @relation(fields: [teacherProfileId], references: [id])
+    teacherProfileId    String?
+
+    students StudentProfile[]
+}
+
+model StudentProfile {
+    id        String @id @default(cuid())
+    firstName String
+    lastName  String
+
+    classrooms Classroom[]
+    userId     String?     @unique
+    user       User?       @relation(fields: [userId], references: [id])
 }
 
 enum DEGREE {

@@ -39,7 +39,7 @@ const ClassroomsList = () => {
   );
 
   const grid3Columns = useMediaQuery(
-    `(max-width: 3000px) and (min-width: 2550px)`,
+    `(max-width: 2300px) and (min-width: 1661px)`,
     false,
     {
       getInitialValueInEffect: false,
@@ -111,7 +111,7 @@ const ClassroomsList = () => {
                 key={classroom.id}
                 id={classroom.id}
                 name={classroom.name}
-                numberOfStudents={classroom.numberOfStudents}
+                numberOfStudents={classroom.maxNumberOfStudents}
               />
             );
           })}
