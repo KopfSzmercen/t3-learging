@@ -81,6 +81,7 @@ model TeacherProfile {
 
     teachingSubjects TeachingSubject[]
     ownedClassrooms  Classroom[]
+    createdGrades    Grade[]
 }
 
 model TeachingSubject {
@@ -108,9 +109,34 @@ model StudentProfile {
     firstName String
     lastName  String
 
-    classrooms Classroom[]
-    userId     String?     @unique
-    user       User?       @relation(fields: [userId], references: [id])
+    classrooms     Classroom[]
+    userId         String?     @unique
+    user           User?       @relation(fields: [userId], references: [id])
+    receivedGrades Grade[]
+}
+
+model Grade {
+    id               String         @id @default(cuid())
+    studentProfileId String
+    studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id])
+
+    teacherProfileId String
+    teacherProfile   TeacherProfile @relation(fields: [teacherProfileId], references: [id])
+
+    value       GRADE_SCALE
+    subjectName String
+    description String?
+
+    createdAt DateTime @default(now())
+}
+
+enum GRADE_SCALE {
+    A
+    B
+    C
+    D
+    E
+    F
 }
 
 enum DEGREE {

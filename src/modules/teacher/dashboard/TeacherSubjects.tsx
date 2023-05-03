@@ -2,28 +2,24 @@ import {
   ActionIcon,
   Button,
   Center,
+  Paper,
   Skeleton,
   Stack,
   Table,
   Text,
   useMantineTheme,
-  Paper,
 } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useSession } from "next-auth/react";
-import { AddTeachingSubjectFormModal } from "~/modules/teacher/dashboard/AddTeachingSubjectFormModal";
-import { api } from "~/utils/api";
+import { useState } from "react";
 import { MdOutlineAdd } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { AddTeachingSubjectFormModal } from "~/modules/teacher/dashboard/AddTeachingSubjectFormModal";
 import RemoveTeachingSubjectModal from "~/modules/teacher/dashboard/RemoveTeachingSubjectModal";
-import { useState } from "react";
+import { api } from "~/utils/api";
 
 const TeacherSubjects = () => {
-  const session = useSession();
   const { isLoading, data, refetch } =
-    api.teacher.getTeachingSubjects.getTeachingSubjects.useQuery({
-      userId: session.data?.user.id as string,
-    });
+    api.teacher.getTeachingSubjects.getTeachingSubjects.useQuery();
 
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
