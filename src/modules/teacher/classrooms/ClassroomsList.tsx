@@ -82,8 +82,6 @@ const ClassroomsList = () => {
       </Center>
     );
 
-  console.log(data);
-
   return (
     <Center>
       <Stack>
