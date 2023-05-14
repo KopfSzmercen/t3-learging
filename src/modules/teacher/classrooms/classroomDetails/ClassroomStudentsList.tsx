@@ -9,6 +9,7 @@ import {
 import { useDisclosure, usePagination } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { MdOutlineAddCircleOutline } from "react-icons/md";
+import ApiError from "~/components/common/ui/ApiError";
 import ContentPaper from "~/components/common/ui/ContentPaper";
 import AddStudentToClassroomModal from "~/modules/teacher/classrooms/classroomDetails/AddStudentModal";
 import { api } from "~/utils/api";
@@ -18,7 +19,7 @@ const ClassroomStudentsList = () => {
   const pagination = usePagination({ total: 10, initialPage: 1 });
   const router = useRouter();
 
-  const { data, isLoading, refetch } =
+  const { data, isLoading, refetch, error } =
     api.teacher.getListOfStudentsInClassroom.get.useQuery({
       pageNumber: pagination.active,
       classroomId: router.query.classroomId as string,
@@ -29,6 +30,8 @@ const ClassroomStudentsList = () => {
     isAddStudentModalOpen,
     { open: openFormModal, close: closeFormModal },
   ] = useDisclosure(false);
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   return (
     <>

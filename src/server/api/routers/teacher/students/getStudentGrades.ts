@@ -1,15 +1,11 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_NUMBER,
-  TRPC_ERROR_CODES_BY_KEY,
-} from "@trpc/server/rpc";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { PaginationHelper } from "~/server/utils/paginationHelper";
 
 const querySchema = z.object({
   studentId: z.string().nonempty(),
   pageNumber: z.number().int().min(1),
-  skip: z.number().optional(),
   pageSize: z.number().min(1),
 });
 
@@ -28,11 +24,7 @@ export const getStudentGrades = createTRPCRouter({
       },
     });
 
-    if (!student)
-      throw new TRPCError({
-        code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-        message: "Student",
-      });
+    if (!student) throw NotFoundError("Student not found.");
 
     const count = await ctx.prisma.grade.count({
       where: {
@@ -42,28 +34,28 @@ export const getStudentGrades = createTRPCRouter({
       },
     });
 
-    const startIndex = (input.pageNumber - 1) * input.pageSize;
-    const totalPages = Math.ceil(count / input.pageSize);
+    const paginationHelper = new PaginationHelper({
+      count,
+      pageSize: input.pageSize,
+      pageNumber: input.pageNumber,
+    });
 
     const grades = await ctx.prisma.grade.findMany({
       where: {
         studentProfileId: student.id,
       },
-      skip: startIndex,
+      skip: paginationHelper.startIndex,
       take: input.pageSize,
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    const hasPreviousPage = startIndex > 0;
-    const hasNextPage = startIndex + input.pageSize < count;
-
     return {
       items: grades,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
+      totalPages: paginationHelper.totalPages,
+      hasPreviousPage: paginationHelper.hasPreviousPage,
+      hasNextPage: paginationHelper.hasNextPage,
     };
   }),
 });

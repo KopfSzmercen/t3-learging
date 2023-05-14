@@ -10,6 +10,7 @@ import { useDisclosure, usePagination } from "@mantine/hooks";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { MdOutlineAdd } from "react-icons/md";
+import ApiError from "~/components/common/ui/ApiError";
 import ContentPaper from "~/components/common/ui/ContentPaper";
 import GradeBadge from "~/components/common/ui/GradeBadge";
 import AddStudentGradeModal from "~/modules/teacher/students/AddStudentGradeModal";
@@ -21,7 +22,7 @@ const StudentGradesList = () => {
 
   const pagination = usePagination({ total: 10, initialPage: 1 });
 
-  const { data, isLoading, refetch } =
+  const { data, isLoading, refetch, error } =
     api.teacher.getStudentGrades.get.useQuery({
       pageNumber: pagination.active,
       studentId: router.query.studentId as string,
@@ -30,6 +31,8 @@ const StudentGradesList = () => {
 
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   return (
     <>

@@ -1,11 +1,8 @@
 import { DEGREE } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_NUMBER,
-  TRPC_ERROR_CODES_BY_KEY,
-} from "@trpc/server/rpc";
 import { z } from "zod";
+import { ConflictError } from "~/server/api/errors/conflict.error";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const mutationSchema = z.object({
@@ -29,11 +26,9 @@ export const addTeachingSubject = createTRPCRouter({
         });
 
       if (userTeachingSubjectWithSameNameCount > 0)
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.CONFLICT],
-          message:
-            "You already have this subject in Your teaching subjects list.",
-        });
+        throw ConflictError(
+          "Subject with the same name is already in your list."
+        );
 
       try {
         await ctx.prisma.teacherProfile.update({
@@ -50,10 +45,7 @@ export const addTeachingSubject = createTRPCRouter({
         });
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError)
-          throw new TRPCError({
-            code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-            message: "Profile for user not found",
-          });
+          throw NotFoundError("Profile not found.");
         throw e;
       }
     }),

@@ -13,12 +13,13 @@ import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
 import { MdOutlineAdd } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import ApiError from "~/components/common/ui/ApiError";
 import { AddTeachingSubjectFormModal } from "~/modules/teacher/dashboard/AddTeachingSubjectFormModal";
 import RemoveTeachingSubjectModal from "~/modules/teacher/dashboard/RemoveTeachingSubjectModal";
 import { api } from "~/utils/api";
 
 const TeacherSubjects = () => {
-  const { isLoading, data, refetch } =
+  const { isLoading, data, refetch, error } =
     api.teacher.getTeachingSubjects.getTeachingSubjects.useQuery();
 
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
@@ -47,6 +48,8 @@ const TeacherSubjects = () => {
   );
 
   if (isLoading) return <Skeleton radius="xl" width="70%" height="50%" />;
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   return (
     <>

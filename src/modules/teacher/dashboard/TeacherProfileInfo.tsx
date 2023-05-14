@@ -12,6 +12,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { AiFillEdit } from "react-icons/ai";
+import ApiError from "~/components/common/ui/ApiError";
 import { ProfileInfoFormModal } from "~/modules/teacher/dashboard/ProfileInfoFormModal";
 import { api } from "~/utils/api";
 
@@ -27,7 +28,7 @@ const isTeacherProfileSetUp = (data: { [key: string]: unknown }) => {
 const TeacherProfileInfo = () => {
   const session = useSession();
 
-  const { isLoading, data, refetch } =
+  const { isLoading, data, refetch, error } =
     api.teacher.getTeacherProfile.getTeacherProfile.useQuery({
       userId: session.data?.user.id as string,
     });
@@ -38,6 +39,8 @@ const TeacherProfileInfo = () => {
   if (isLoading) return <Skeleton>lorem</Skeleton>;
 
   const isProfileSetUp = data && isTeacherProfileSetUp(data);
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   return (
     <Center>

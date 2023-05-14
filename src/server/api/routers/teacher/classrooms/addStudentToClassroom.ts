@@ -4,6 +4,7 @@ import {
   TRPC_ERROR_CODES_BY_KEY,
 } from "@trpc/server/rpc";
 import { z } from "zod";
+import { BadRequestError } from "~/server/api/errors/badRequest.error";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const mutationSchema = z.object({
@@ -44,10 +45,7 @@ export const addStudentToClassroom = createTRPCRouter({
         classroomToAddStudent._count.students + 1 >
         classroomToAddStudent.maxNumberOfStudents
       )
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.BAD_REQUEST],
-          message: "Can not add more students than allowed.",
-        });
+        throw BadRequestError("Can not add more students than allowed.");
 
       const newStudent = await ctx.prisma.studentProfile.create({
         data: {

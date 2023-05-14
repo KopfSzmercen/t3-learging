@@ -1,9 +1,5 @@
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_NUMBER,
-  TRPC_ERROR_CODES_BY_KEY,
-} from "@trpc/server/rpc";
 import { z } from "zod";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const querySchema = z.object({
@@ -21,11 +17,7 @@ export const getClassrromById = createTRPCRouter({
       },
     });
 
-    if (classroom === null)
-      throw new TRPCError({
-        code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-        message: "Classrom not found",
-      });
+    if (classroom === null) throw NotFoundError("Classroom not found.");
 
     return classroom;
   }),

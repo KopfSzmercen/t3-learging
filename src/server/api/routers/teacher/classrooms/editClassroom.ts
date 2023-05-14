@@ -1,9 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import {
-  TRPC_ERROR_CODES_BY_NUMBER,
   TRPC_ERROR_CODES_BY_KEY,
+  TRPC_ERROR_CODES_BY_NUMBER,
 } from "@trpc/server/rpc";
 import { z } from "zod";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const mutationSchema = z.object({
@@ -33,11 +34,7 @@ export const editClassroom = createTRPCRouter({
         },
       });
 
-      if (!classroom)
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-          message: "Classrom not found",
-        });
+      if (!classroom) throw NotFoundError("Classroom not found.");
 
       if (classroom?._count.students > input.maxNumberOfStudents)
         throw new TRPCError({
