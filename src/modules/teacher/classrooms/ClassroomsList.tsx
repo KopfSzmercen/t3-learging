@@ -11,6 +11,7 @@ import {
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
 import { MdOutlineAdd } from "react-icons/md";
+import ApiError from "~/components/common/ui/ApiError";
 import AddClassroomModal from "~/modules/teacher/classrooms/AddClassroomModal";
 import ClassroomCard from "~/modules/teacher/classrooms/ClassroomCard";
 import { api } from "~/utils/api";
@@ -51,7 +52,7 @@ const ClassroomsList = () => {
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
 
-  const { isLoading, data, refetch } =
+  const { isLoading, data, refetch, error } =
     api.teacher.getOwnedClassrooms.get.useQuery({
       pageNumber,
       pageSize,
@@ -59,6 +60,8 @@ const ClassroomsList = () => {
     });
 
   if (isLoading) return <Skeleton> La!</Skeleton>;
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   if (data && data?.items.length < 1)
     return (

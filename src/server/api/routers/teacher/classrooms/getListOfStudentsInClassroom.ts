@@ -5,6 +5,7 @@ import {
 } from "@trpc/server/rpc";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { PaginationHelper } from "~/server/utils/paginationHelper";
 
 const querySchema = z.object({
   pageNumber: z.number().int().min(1),
@@ -15,8 +16,6 @@ const querySchema = z.object({
 
 export const getListOfStudentsInClassroom = createTRPCRouter({
   get: publicProcedure.input(querySchema).query(async ({ input, ctx }) => {
-    const startIndex = (input.pageNumber - 1) * input.pageSize;
-
     const classroomToGetStudents = await ctx.prisma.classroom.findFirst({
       where: {
         id: input.classroomId,
@@ -42,7 +41,11 @@ export const getListOfStudentsInClassroom = createTRPCRouter({
       },
     });
 
-    const totalPages = Math.ceil(count / input.pageSize);
+    const paginationHelper = new PaginationHelper({
+      count,
+      pageSize: input.pageSize,
+      pageNumber: input.pageNumber,
+    });
 
     const students = await ctx.prisma.studentProfile.findMany({
       where: {
@@ -52,21 +55,18 @@ export const getListOfStudentsInClassroom = createTRPCRouter({
           },
         },
       },
-      skip: startIndex,
+      skip: paginationHelper.startIndex,
       take: input.pageSize,
       orderBy: {
         firstName: "asc",
       },
     });
 
-    const hasPreviousPage = startIndex > 0;
-    const hasNextPage = startIndex + input.pageSize < count;
-
     return {
       items: students,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
+      totalPages: paginationHelper.totalPages,
+      hasPreviousPage: paginationHelper.hasPreviousPage,
+      hasNextPage: paginationHelper.hasNextPage,
     };
   }),
 });

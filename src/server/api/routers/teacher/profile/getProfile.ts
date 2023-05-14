@@ -1,10 +1,6 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_NUMBER,
-  TRPC_ERROR_CODES_BY_KEY,
-} from "@trpc/server/rpc";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const querySchema = z.object({
   userId: z.string(),
@@ -25,11 +21,7 @@ export const getTeacherProfile = createTRPCRouter({
         },
       });
 
-      if (teacherProfile === null)
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-          message: "Profile for user not found",
-        });
+      if (teacherProfile === null) throw NotFoundError("Profile not found.");
 
       return teacherProfile;
     }),

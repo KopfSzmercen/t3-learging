@@ -9,6 +9,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { AiFillEdit } from "react-icons/ai";
+import ApiError from "~/components/common/ui/ApiError";
 import ContentPaper from "~/components/common/ui/ContentPaper";
 import EditClassroomModal from "~/modules/teacher/classrooms/classroomDetails/EditClassroomDetailsModal";
 import { api } from "~/utils/api";
@@ -17,7 +18,7 @@ const ClassroomDetailCard = () => {
   const router = useRouter();
   const theme = useMantineTheme();
 
-  const { isLoading, data, refetch } =
+  const { isLoading, data, refetch, error } =
     api.teacher.getClassrromById.get.useQuery({
       classroomId: router.query.classroomId as string,
     });
@@ -27,6 +28,8 @@ const ClassroomDetailCard = () => {
 
   if (isLoading)
     return <Skeleton className="h-[400px] w-[40vw]">lorem</Skeleton>;
+
+  if (error) return <ApiError errorData={error.data} message={error.message} />;
 
   if (data) {
     return (

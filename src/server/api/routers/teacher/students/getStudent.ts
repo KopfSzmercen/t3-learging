@@ -1,10 +1,5 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_NUMBER,
-  TRPC_ERROR_CODES_BY_KEY,
-} from "@trpc/server/rpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const querySchema = z.object({
   studentId: z.string().nonempty(),
@@ -31,12 +26,6 @@ export const getStudent = createTRPCRouter({
         },
       },
     });
-
-    if (!student)
-      throw new TRPCError({
-        code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-        message: "Student",
-      });
 
     return student;
   }),

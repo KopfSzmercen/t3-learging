@@ -1,10 +1,6 @@
 import { GRADE_SCALE } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
-import {
-  TRPC_ERROR_CODES_BY_KEY,
-  TRPC_ERROR_CODES_BY_NUMBER,
-} from "@trpc/server/rpc";
 import { z } from "zod";
+import { NotFoundError } from "~/server/api/errors/notFound.error";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const gradeScalesStringArrayFromEnum = Object.keys(GRADE_SCALE);
@@ -33,10 +29,7 @@ export const addStudentGrade = createTRPCRouter({
         });
 
       if (!subjectInTeacherTeachingSubjects)
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.BAD_REQUEST],
-          message: "Can not add a grade from subject which you don't teach.",
-        });
+        throw NotFoundError("Teaching subject not found.");
 
       const studentToAddGrades = await ctx.prisma.studentProfile.findFirst({
         where: {
@@ -51,11 +44,7 @@ export const addStudentGrade = createTRPCRouter({
         },
       });
 
-      if (!studentToAddGrades)
-        throw new TRPCError({
-          code: TRPC_ERROR_CODES_BY_NUMBER[TRPC_ERROR_CODES_BY_KEY.NOT_FOUND],
-          message: "Student not found.",
-        });
+      if (!studentToAddGrades) throw NotFoundError("Student not found");
 
       const newGrade = await ctx.prisma.grade.create({
         data: {
