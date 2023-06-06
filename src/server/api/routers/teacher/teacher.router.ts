@@ -10,7 +10,10 @@ import { getTeachingSubjects } from "~/server/api/routers/teacher/profile/getTea
 import { removeTeachingSubject } from "~/server/api/routers/teacher/profile/removeTeachingSubject";
 import { updateTeacherProfile } from "~/server/api/routers/teacher/profile/updateProfile";
 import { addStudentGrade } from "~/server/api/routers/teacher/students/addStudentGrade";
+import { deleteStudentGrade } from "~/server/api/routers/teacher/students/deleteStudentGrade";
+import { editStudentGrade } from "~/server/api/routers/teacher/students/editStudentGrade";
 import { getStudent } from "~/server/api/routers/teacher/students/getStudent";
+import { getStudentGradeById } from "~/server/api/routers/teacher/students/getStudentGrade";
 import { getStudentGrades } from "~/server/api/routers/teacher/students/getStudentGrades";
 import { createTRPCRouter } from "~/server/api/trpc";
 
@@ -29,4 +32,7 @@ export const teacherRouter = createTRPCRouter({
   getStudent,
   addStudentGrade,
   getStudentGrades,
+  deleteStudentGrade,
+  getStudentGradeById,
+  editStudentGrade,
 });

@@ -6,13 +6,12 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { useDisclosure, usePagination } from "@mantine/hooks";
-import { format } from "date-fns";
+import { useDisclosure, useMediaQuery, usePagination } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { MdOutlineAdd } from "react-icons/md";
 import ApiError from "~/components/common/ui/ApiError";
 import ContentPaper from "~/components/common/ui/ContentPaper";
-import GradeBadge from "~/components/common/ui/GradeBadge";
+import GradeListItem from "~/components/grades/GradeListItem";
 import AddStudentGradeModal from "~/modules/teacher/students/AddStudentGradeModal";
 import { api } from "~/utils/api";
 
@@ -31,6 +30,8 @@ const StudentGradesList = () => {
 
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
+
+  const shouldDisplayAddedAtColumn = useMediaQuery("(min-width: 550px)");
 
   if (error) return <ApiError errorData={error.data} message={error.message} />;
 
@@ -61,20 +62,20 @@ const StudentGradesList = () => {
             <Table striped highlightOnHover className="mt-7">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Value</th>
                   <th>Subject</th>
-                  <th>Added at</th>
+                  {shouldDisplayAddedAtColumn && <th>Added at</th>}
                 </tr>
               </thead>
               <tbody>
                 {data.items.map((grade) => (
-                  <tr key={grade.id}>
-                    <td>
-                      <GradeBadge value={grade.value} />
-                    </td>
-                    <td>{grade.subjectName}</td>
-                    <td>{format(grade.createdAt, "dd-MM-yyyy HH:mm")}</td>
-                  </tr>
+                  <GradeListItem
+                    grade={grade}
+                    shouldDisplayAddedAtColumn={shouldDisplayAddedAtColumn}
+                    key={grade.id}
+                    refetch={refetch}
+                  />
                 ))}
               </tbody>
             </Table>
