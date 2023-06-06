@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, usePagination } from "@mantine/hooks";
 import { useRouter } from "next/router";
-import { MdOutlineAddCircleOutline } from "react-icons/md";
+import { MdOutlineAdd } from "react-icons/md";
 import ApiError from "~/components/common/ui/ApiError";
 import ContentPaper from "~/components/common/ui/ContentPaper";
 import AddStudentToClassroomModal from "~/modules/teacher/classrooms/classroomDetails/AddStudentModal";
@@ -48,7 +48,7 @@ const ClassroomStudentsList = () => {
               openFormModal();
             }}
           >
-            <MdOutlineAddCircleOutline />
+            <MdOutlineAdd />
           </ActionIcon>
         </div>
 
