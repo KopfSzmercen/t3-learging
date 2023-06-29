@@ -2,7 +2,6 @@ import {
   AppShell,
   Burger,
   Button,
-  Footer,
   Header,
   MediaQuery,
   Navbar,
@@ -12,13 +11,16 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
+import LogoImage from "public/images/main-logo.png";
 import { useState } from "react";
+import { MdRoomPreferences } from "react-icons/md";
+import { RiDashboardLine } from "react-icons/ri";
+import { FooterLinks } from "~/components/common/layouts/Footer";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 import MainLink from "~/components/common/ui/MainLink";
-import { RiDashboardLine } from "react-icons/ri";
-import { MdRoomPreferences } from "react-icons/md";
-import Link from "next/link";
 
 export interface IUserLayout {
   children: React.ReactNode;
@@ -81,11 +83,7 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
           <Navbar.Section>{/* Footer with user */}</Navbar.Section>
         </Navbar>
       }
-      footer={
-        <Footer height={60} p="md">
-          Application footer
-        </Footer>
-      }
+      footer={<FooterLinks />}
       header={
         <Header height={{ base: 50, md: 70 }} p="md">
           <div
@@ -101,9 +99,18 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
               />
             </MediaQuery>
 
-            <div className=" hidden items-center gap-3 md:flex">
-              <Text>Application header</Text>
-            </div>
+            <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+              <Link href="/">
+                <div className="relative h-[50px] w-[90px]">
+                  <Image
+                    alt={"logo"}
+                    fill={true}
+                    src={LogoImage}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
+              </Link>
+            </MediaQuery>
 
             <div className="ml-auto flex items-center gap-5">
               <ColorSchemeToggler />

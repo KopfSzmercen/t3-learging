@@ -2,19 +2,21 @@ import {
   AppShell,
   Burger,
   Button,
-  Footer,
+  Center,
   Header,
   MediaQuery,
   Navbar,
   Stack,
-  Text,
   useMantineTheme,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import LogoImage from "public/images/main-logo.png";
 import { useState } from "react";
+import { FooterLinks } from "~/components/common/layouts/Footer";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 
 export interface IPublicLayout {
@@ -47,11 +49,7 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
       }}
       navbarOffsetBreakpoint="xl"
       asideOffsetBreakpoint="sm"
-      footer={
-        <Footer height={60} p="md">
-          Application footer
-        </Footer>
-      }
+      footer={<FooterLinks />}
       navbar={
         <Navbar
           p="md"
@@ -61,7 +59,16 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
           display={{ md: "none" }}
         >
           <Stack className="text-center">
-            <Text className="text-2xl font-bold">Use our app right now!</Text>
+            <Center>
+              <div className="relative h-[110px] w-[110px]">
+                <Image
+                  alt={"logo"}
+                  fill={true}
+                  src={LogoImage}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            </Center>
 
             <Stack className="mt-5 w-full" spacing={30}>
               <Link href="/auth/sign-in">
@@ -96,9 +103,18 @@ const PublicLayout: React.FC<IPublicLayout> = ({ children }) => {
               />
             </MediaQuery>
 
-            <Text>
-              <Link href="/"> Home</Link>
-            </Text>
+            <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+              <Link href="/">
+                <div className="relative h-[50px] w-[90px]">
+                  <Image
+                    alt={"logo"}
+                    fill={true}
+                    src={LogoImage}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
+              </Link>
+            </MediaQuery>
           </div>
           <div className="gap- 5 flex items-center gap-5">
             <ColorSchemeToggler />
