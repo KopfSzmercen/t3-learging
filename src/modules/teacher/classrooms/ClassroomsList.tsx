@@ -2,14 +2,14 @@ import {
   ActionIcon,
   Button,
   Center,
+  Grid,
   Pagination,
   Skeleton,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useState } from "react";
+import { useDisclosure, usePagination } from "@mantine/hooks";
 import { MdOutlineAdd } from "react-icons/md";
 import ApiError from "~/components/common/ui/ApiError";
 import AddClassroomModal from "~/modules/teacher/classrooms/AddClassroomModal";
@@ -17,46 +17,21 @@ import ClassroomCard from "~/modules/teacher/classrooms/ClassroomCard";
 import { api } from "~/utils/api";
 
 const ClassroomsList = () => {
-  const [pageNumber, setPageNumber] = useState(1);
-  const [skip, setSkip] = useState(0);
-  const [pageSize, setPageSize] = useState(12);
+  // const [pageNumber, setPageNumber] = useState(1);
+  // const [skip, setSkip] = useState(0);
+  // const [pageSize, setPageSize] = useState(12);
 
   const theme = useMantineTheme();
 
-  const grid1Column = useMediaQuery(
-    `(max-width: 1300px) and (min-width: 0px)`,
-    false,
-    {
-      getInitialValueInEffect: false,
-    }
-  );
-
-  const grid2Columns = useMediaQuery(
-    `(max-width: 1660px) and (min-width: 1301px)`,
-    false,
-    {
-      getInitialValueInEffect: false,
-    }
-  );
-
-  const grid3Columns = useMediaQuery(
-    `(max-width: 2300px) and (min-width: 1661px)`,
-    false,
-    {
-      getInitialValueInEffect: false,
-    }
-  );
-
-  const grid4Columns = !grid2Columns && !grid3Columns && !grid1Column;
+  const pagination = usePagination({ total: 10, initialPage: 1 });
 
   const [isFormModalOpen, { open: openFormModal, close: closeFormModal }] =
     useDisclosure(false);
 
   const { isLoading, data, refetch, error } =
     api.teacher.getOwnedClassrooms.get.useQuery({
-      pageNumber,
-      pageSize,
-      skip,
+      pageNumber: pagination.active,
+      pageSize: 10,
     });
 
   if (isLoading) return <Skeleton> La!</Skeleton>;
@@ -86,46 +61,49 @@ const ClassroomsList = () => {
     );
 
   return (
-    <Center>
+    <Center className="max-w-[1800px]">
       <Stack>
-        <ActionIcon
-          onClick={() => {
-            openFormModal();
-          }}
-          className="ml-auto"
-          color={theme.primaryColor}
-          variant="filled"
-        >
-          <MdOutlineAdd />
-        </ActionIcon>
-        <div
-          className={`grid gap-4 xl:gap-10 
-          ${grid4Columns ? "grid-cols-4" : ""}
-          ${grid3Columns ? "grid-cols-3" : ""}
-          ${grid2Columns ? "grid-cols-2" : ""}
-          ${grid1Column ? "grid-cols-1" : ""}
-          `}
-        >
-          {data?.items.map((classroom) => {
-            return (
-              <ClassroomCard
-                key={classroom.id}
-                id={classroom.id}
-                name={classroom.name}
-                numberOfStudents={classroom.maxNumberOfStudents}
-              />
-            );
-          })}
+        <div className=" w-full max-w-[1700px] pb-2">
+          <ActionIcon
+            onClick={() => {
+              openFormModal();
+            }}
+            color={theme.primaryColor}
+            variant="filled"
+            className="ml-auto"
+          >
+            <MdOutlineAdd />
+          </ActionIcon>
         </div>
+        <Stack className="mt-2">
+          <Grid className="mx-auto w-[90%]" align="center">
+            {data?.items.map((classroom) => {
+              return (
+                <Grid.Col
+                  key={classroom.id}
+                  span="auto"
+                  className="flex items-center justify-center lg:justify-start"
+                >
+                  <ClassroomCard
+                    key={classroom.id}
+                    id={classroom.id}
+                    name={classroom.name}
+                    numberOfStudents={classroom.maxNumberOfStudents}
+                  />
+                </Grid.Col>
+              );
+            })}
+          </Grid>
 
-        {data?.totalPages && data?.totalPages > 1 && (
-          <Pagination
-            value={pageNumber}
-            onChange={setPageNumber}
-            total={data?.totalPages}
-            className="mx-auto mt-10"
-          />
-        )}
+          {data?.totalPages && data?.totalPages > 1 && (
+            <Pagination
+              className="mx-auto mt-6"
+              value={pagination.active}
+              onChange={pagination.setPage}
+              total={data.totalPages}
+            />
+          )}
+        </Stack>
       </Stack>
 
       <AddClassroomModal
