@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { USER_ROLE } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
@@ -8,10 +9,7 @@ import {
 } from "next-auth";
 import { type DefaultJWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GITHUBProvider from "next-auth/providers/GITHUB";
-import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import * as bcrypt from "bcrypt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -67,10 +65,6 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    GITHUBProvider({
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
-    }),
     /**
      * ...add more providers here.
      *
