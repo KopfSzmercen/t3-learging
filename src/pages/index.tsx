@@ -1,21 +1,13 @@
-import {
-  Box,
-  Center,
-  Container,
-  Grid,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
+import { Center } from "@mantine/core";
 import Head from "next/head";
 import { type NextPageWithLayout } from "~/components/common/layouts/NextPageWithLayout";
 import PublicLayout from "~/components/common/layouts/PublicLayout";
-import FeatureCard from "~/modules/home/FeatureCard";
+import FeaturesSection from "~/modules/home/FeaturesSection";
 import Hero from "~/modules/home/Hero";
 import RatingSection from "~/modules/home/RatingSection";
 import { TableSection } from "~/modules/home/TableSection";
 
 const Home: NextPageWithLayout = () => {
-  const theme = useMantineTheme();
   return (
     <>
       <Head>
@@ -30,54 +22,12 @@ const Home: NextPageWithLayout = () => {
 
         <section>
           <Center className="mx-auto mt-16 max-w-[1800px]">
-            <Grid>
-              <Grid.Col span="auto">
-                <FeatureCard />
-              </Grid.Col>
-
-              <Grid.Col span="auto">
-                <FeatureCard />
-              </Grid.Col>
-
-              <Grid.Col span="auto">
-                <FeatureCard />
-              </Grid.Col>
-            </Grid>
+            <FeaturesSection />
           </Center>
         </section>
 
         <section className="w-full">
-          <Box
-            sx={{
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.colors.gray[1],
-              width: "100%",
-              padding: 1,
-              marginTop: 80,
-            }}
-          >
-            <Center className="mx-auto my-10 max-w-[1400px] py-[20px]">
-              <div className="flex w-full flex-col items-center gap-20">
-                <Text
-                  // variant="gradient"
-                  // gradient={{
-                  //   from: theme.primaryColor,
-                  //   to: "teal",
-                  //   deg: 60,
-                  // }}
-                  ta="center"
-                  fz="xl"
-                  className="font-s"
-                  fw={900}
-                >
-                  <h2> Just see who uses us!</h2>
-                </Text>
-                <TableSection />
-              </div>
-            </Center>
-          </Box>
+          <TableSection />
         </section>
 
         <section>

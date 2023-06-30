@@ -18,7 +18,6 @@ import LogoImage from "public/images/main-logo.png";
 import { useState } from "react";
 import { MdRoomPreferences } from "react-icons/md";
 import { RiDashboardLine } from "react-icons/ri";
-import { FooterLinks } from "~/components/common/layouts/Footer";
 import ColorSchemeToggler from "~/components/common/ui/ColorSchemeToggler";
 import MainLink from "~/components/common/ui/MainLink";
 
@@ -80,10 +79,8 @@ const UserLayout: React.FC<IUserLayout> = ({ children }) => {
               <MainLink label="Classrooms" icon={<MdRoomPreferences />} />
             </Link>
           </Navbar.Section>
-          <Navbar.Section>{/* Footer with user */}</Navbar.Section>
         </Navbar>
       }
-      footer={<FooterLinks />}
       header={
         <Header height={{ base: 50, md: 70 }} p="md">
           <div
